@@ -1,4 +1,4 @@
-package canvas
+package region
 
 type Region struct {
 	SizeX  uint16                     `json:"sizeX"`
@@ -31,7 +31,7 @@ func (r *Region) Draw(x, y uint16) {
 		r.Bitmap[x] = make(map[uint16]bool)
 	}
 	r.Bitmap[x][y] = true
-	r.Draws = append(r.Draws, &Point{PositionX: x, PositionY: y})
+	r.Draws = append(r.Draws, &Point{X: x, Y: y})
 }
 
 func (r *Region) Erase(x, y uint16) {
@@ -39,4 +39,12 @@ func (r *Region) Erase(x, y uint16) {
 		return
 	}
 	r.Bitmap[x][y] = false
+}
+
+func (r *Region) GetSizeX() uint16 {
+	return r.SizeX
+}
+
+func (r *Region) GetSizeY() uint16 {
+	return r.SizeY
 }
