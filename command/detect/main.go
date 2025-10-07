@@ -28,13 +28,6 @@ func main() {
 	}
 	fmt.Printf("Loaded %d characters from database\n", len(database.Characters))
 
-	// Load font manager
-	fmt.Println("Loading fonts...")
-	fontManager, err := NewFontManager()
-	if err != nil {
-		log.Fatal("Failed to load fonts:", err)
-	}
-
 	// Load and process page image
 	fmt.Printf("Processing page: %s\n", imagePath)
 	pageData, err := processPage(imagePath, database)
@@ -54,36 +47,23 @@ func main() {
 	text := pageData.GetPlainText()
 	fmt.Println(text)
 
-	// Generate overlay images
-	fmt.Println("\n=== GENERATING OVERLAY IMAGES ===")
-
-	err = RenderTextAreasOverlay(pageData, fontManager)
-	if err != nil {
-		fmt.Printf("Failed to render text areas overlay: %v\n", err)
+	fmt.Printf("\n=== DETAILED RESULTS ===\n")
+	for i, area := range pageData.TextAreas {
+		fmt.Printf("\nText Area %d: (%d,%d) %dx%d\n", i+1, area.X, area.Y, area.Width, area.Height)
+		for j, line := range area.Lines {
+			fmt.Printf("  Line %d: (%d,%d) %dx%d\n", j+1, line.X, line.Y, line.Width, line.Height)
+			for k, word := range line.Words {
+				avgConfidence := 0.0
+				if len(word.Chars) > 0 {
+					for _, char := range word.Chars {
+						avgConfidence += char.Confidence
+					}
+					avgConfidence /= float64(len(word.Chars))
+				}
+				fmt.Printf("    Word %d: \"%s\" (%.1f%% confidence)\n", k+1, word.Text, avgConfidence)
+			}
+		}
 	}
-
-	err = RenderLinesOverlay(pageData, fontManager)
-	if err != nil {
-		fmt.Printf("Failed to render lines overlay: %v\n", err)
-	}
-
-	err = RenderWordsOverlay(pageData, fontManager)
-	if err != nil {
-		fmt.Printf("Failed to render words overlay: %v\n", err)
-	}
-
-	err = RenderCharactersOverlay(pageData, fontManager)
-	if err != nil {
-		fmt.Printf("Failed to render characters overlay: %v\n", err)
-	}
-
-	err = RenderFullOverlay(pageData, fontManager)
-	if err != nil {
-		fmt.Printf("Failed to render full overlay: %v\n", err)
-	}
-
-	fmt.Println("\n=== OCR PROCESSING COMPLETE ===")
-	fmt.Printf("Check generate/recognize/ for overlay images\n")
 }
 
 func processPage(imagePath string, database *recognize.FeatureDatabase) (*page.Page, error) {
