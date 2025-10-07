@@ -1,11 +1,12 @@
 package characterCalculate
 
 import (
+	"math"
+	"sort"
+
 	"github.com/bsthun/glyphcanvas/package/character"
 	characterHelper "github.com/bsthun/glyphcanvas/package/character/helper"
 	"github.com/bsthun/glyphcanvas/package/region"
-	"math"
-	"sort"
 )
 
 func CharacterBreakdownToRegions(char *character.Character) ([]*region.Region, error) {
